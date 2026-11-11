@@ -41,7 +41,7 @@ The design implements run-time dynamic precision switching between 8-bit signed 
 
 ## Architectural Overview
 
-Multiply-Accumulate operations ($ACC_{\text{next}} = ACC_{\text{previous}} + (A \times B)$) form the computational core of deep learning inference accelerators, FIR/IIR digital filters, and matrix algebra engines. Deep learning workloads frequently exhibit mixed-precision requirements: feature maps and weights in convolutional and dense layers achieve optimal memory and computational efficiency using 8-bit signed quantization (INT8), whereas sensitive residual paths, recurrent state updates, or audio processing require 16-bit signed precision (INT16).
+Multiply-Accumulate operations (`ACC_next = ACC_prev + (A × B)`) form the computational core of deep learning inference accelerators, FIR/IIR digital filters, and matrix algebra engines. Deep learning workloads frequently exhibit mixed-precision requirements: feature maps and weights in convolutional and dense layers achieve optimal memory and computational efficiency using 8-bit signed quantization (INT8), whereas sensitive residual paths, recurrent state updates, or audio processing require 16-bit signed precision (INT16).
 
 This architecture eliminates the need for separate, redundant INT8 and INT16 hardware units by sharing a single 4-stage pipelined datapath that dynamically switches precision modes on a cycle-by-cycle basis without requiring pipeline flushing or design re-synthesis.
 
@@ -70,17 +70,19 @@ This architecture eliminates the need for separate, redundant INT8 and INT16 har
 
 The core computes the discrete-time signed accumulation:
 
-$$ACC[k] = \begin{cases} 
+$$
+ACC[k] = \begin{cases} 
 0, & \text{if } \text{clr}[k] = 1 \\
-ACC[k-1] + \text{sat}\Big(A[k] \times B[k]\Big), & \text{if } \text{clr}[k] = 0 \land \text{en}[k] = 1 \\
+ACC[k-1] + (A[k] \times B[k]), & \text{if } \text{clr}[k] = 0 \land \text{en}[k] = 1 \\
 ACC[k-1], & \text{otherwise}
-\end{cases}$$
+\end{cases}
+$$
 
 ### Numerical Dynamic Range and Headroom
 
 | Parameter | Mode 0 (INT8 Mode) | Mode 1 (INT16 Mode) |
 | :--- | :--- | :--- |
-| **Input Operands ($A, B$)** | 8-bit signed two's complement (`[-128, +127]`) | 16-bit signed two's complement (`[-32768, +32767]`) |
+| **Input Operands (A, B)** | 8-bit signed two's complement (`[-128, +127]`) | 16-bit signed two's complement (`[-32768, +32767]`) |
 | **Multiplier Product** | 16-bit signed (`[-16256, +16384]`) | 32-bit signed (`[-1073709056, +1073741824]`) |
 | **Sign-Extended Product** | 40-bit signed two's complement | 40-bit signed two's complement |
 | **Accumulator Register** | 40-bit signed (`[-549755813888, +549755813887]`) | 40-bit signed (`[-549755813888, +549755813887]`) |
@@ -161,7 +163,7 @@ flowchart LR
 
 ## Datapath Pipeline
 
-The core uses an initiation interval of $II=1$, accepting new operand pairs on every active clock cycle and delivering results with a 4-cycle pipeline latency:
+The core uses an initiation interval of **II = 1**, accepting new operand pairs on every active clock cycle and delivering results with a 4-cycle pipeline latency:
 
 ```
 Clock Cycle:     | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 |
@@ -183,7 +185,7 @@ Seven architectural variants were designed, synthesized, and implemented out-of-
 
 ### Architectural Variant Exploration (V1–V7)
 
-| Variant | Description | Slice LUTs | Slice FFs | DSP48E1 | $WNS$ (ns) | $F_{\text{max}}$ (MHz) | Dynamic Power (W) | Total Power (W) |
+| Variant | Description | Slice LUTs | Slice FFs | DSP48E1 | WNS (ns) | Fmax (MHz) | Dynamic Power (W) | Total Power (W) |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **V1** | Single-Cycle Unpipelined Baseline | 1,061 | 40 | 0 | -1.543 | 86.63 | 0.015 | 0.118 |
 | **V2** | 2-Stage Pipelined (Soft Multiplier) | 1,079 | 114 | 0 | +0.655 | 107.01 | 0.016 | 0.119 |
@@ -194,7 +196,7 @@ Seven architectural variants were designed, synthesized, and implemented out-of-
 | **V7** | 4-Stage Pure Soft-LUT Logic (No DSP) | 1,075 | 154 | 0 | +0.603 | 106.42 | 0.018 | 0.121 |
 
 > [!NOTE]
-> All Static Timing Analysis ($WNS$ and estimated $F_{\text{max}}$) was evaluated under a nominal 100.0 MHz ($T_{\text{clk}} = 10.0\text{ ns}$) clock constraint at 25°C. Reported $F_{\text{max}}$ values are static timing estimates ($F_{\text{max}} = 1 / (T_{\text{clk}} - WNS)$) and not physically measured operating frequencies.
+> All Static Timing Analysis (WNS and estimated Fmax) was evaluated under a nominal 100.0 MHz (clock period $T_{\text{clk}} = 10.0\text{ ns}$) constraint at 25°C. Reported Fmax values are static timing estimates derived from setup slack ($F_{\text{max}} = 1 / (T_{\text{clk}} - WNS)$) and not physically measured operating frequencies.
 
 ---
 
@@ -204,8 +206,8 @@ A key design decision in FPGA accelerator design is whether to consume dedicated
 
 ![DSP vs LUT Tradeoff](assets/dsp_vs_lut_tradeoff.png)
 
-- **Pure Soft-LUT (V7)**: Requires **1,075 LUTs** (2.02% of XC7Z020 resources) and achieves an $F_{\text{max}}$ of 106.42 MHz. Carry-chain routing across 32-bit addition stages creates the primary critical timing path.
-- **Dedicated DSP48E1 (V3)**: Consumes **2 DSP blocks** and only **12 LUTs** (a 98.9% LUT reduction), improving timing slack to +3.146 ns and extending $F_{\text{max}}$ headroom to 145.88 MHz.
+- **Pure Soft-LUT (V7)**: Requires **1,075 LUTs** (2.02% of XC7Z020 resources) and achieves an estimated Fmax of 106.42 MHz. Carry-chain routing across 32-bit addition stages creates the primary critical timing path.
+- **Dedicated DSP48E1 (V3)**: Consumes **2 DSP blocks** and only **12 LUTs** (a 98.9% LUT reduction), improving timing slack to +3.146 ns and extending estimated Fmax headroom to 145.88 MHz.
 - **Single DSP Optimization (V4)**: Uses 1 DSP block for lower-order multiplication alongside 104 LUTs for partial product expansion. While saving 1 DSP block, it increases LUT count by 92 and register count by 17.
 
 Full trade-off analysis is documented in [docs/design-decisions.md](docs/design-decisions.md).
@@ -233,7 +235,7 @@ The primary production architecture (V3/V5) was encapsulated within an AXI4-Lite
 | **Worst Negative Slack (WNS)** | $\ge 0.000\text{ ns}$ | **+3.181 ns** | **MET** |
 | **Worst Hold Slack (WHS)** | $\ge 0.000\text{ ns}$ | **+0.049 ns** | **MET** |
 | **Failing Endpoints** | 0 | 0 | **PASSED** |
-| **Peak Datapath Throughput** | $II = 1$ @ 100.0 MHz | **100.0 MMAC/s** | **VERIFIED** |
+| **Peak Datapath Throughput** | II = 1 @ 100.0 MHz | **100.0 MMAC/s** | **VERIFIED** |
 | **Theoretical Datapath Fmax** | Post-Route Timing Model | **145.88 MHz** | Estimated |
 | **Total On-Chip Power** | Vivado Vector Analysis | **0.106 W** | Estimated |
 
@@ -266,7 +268,7 @@ Test Suite Breakdown:
 
 ### Measured Execution Metrics
 
-- **Datapath Hardware Throughput**: At the configured 100.0 MHz PL clock with an initiation interval of $II=1$, the MAC core processes **100,000,000 MAC operations/second** (100.0 MMAC/s).
+- **Datapath Hardware Throughput**: At the configured 100.0 MHz PL clock with an initiation interval of II = 1, the MAC core processes **100,000,000 MAC operations/second** (100.0 MMAC/s).
 - **Software MMIO Driver Latency**: When driven interactively from ARM Cortex-A9 user-space via unbuffered 32-bit `/dev/mem` AXI-Lite read/write cycles, the measured average execution rate is **0.277 ms per transaction** (~3,610 MMIO transactions/second).
 - **Security Audit**: Completed a clean audit of target board permissions; no residual unauthenticated sudo configurations or lingering background processes remain on the target system.
 
