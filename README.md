@@ -68,15 +68,13 @@ This architecture eliminates the need for separate, redundant INT8 and INT16 har
 
 ## Mathematical Formulation
 
-The core computes the discrete-time signed accumulation:
+The core computes the discrete-time signed accumulation on each active clock cycle:
 
-$$
-ACC[k] = \begin{cases} 
-0, & \text{if } \text{clr}[k] = 1 \\
-ACC[k-1] + (A[k] \times B[k]), & \text{if } \text{clr}[k] = 0 \land \text{en}[k] = 1 \\
-ACC[k-1], & \text{otherwise}
-\end{cases}
-$$
+```text
+          ┌  0,                         if clr[k] == 1  (synchronous clear)
+ACC[k] =  │  ACC[k-1] + (A[k] × B[k]),  if clr[k] == 0 and en[k] == 1  (accumulate)
+          └  ACC[k-1],                  otherwise  (hold previous state)
+```
 
 ### Numerical Dynamic Range and Headroom
 

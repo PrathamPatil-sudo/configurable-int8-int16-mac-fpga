@@ -134,9 +134,15 @@ sequenceDiagram
 
 ### Stage 2: Accumulator & Signed Overflow Detection
 - The 32-bit product is sign-extended to 40 bits and accumulated onto the running 40-bit register:
-  $$ACC[39:0] \leftarrow \begin{cases} 40\text{'sh0} + \text{sign\_ext}(Product), & \text{if } acc\_clear = 1 \\ ACC[39:0] + \text{sign\_ext}(Product), & \text{if } enable = 1 \text{ and } mult\_valid = 1 \\ ACC[39:0], & \text{otherwise} \end{cases}$$
+  ```text
+            ┌  40'sh0 + sign_ext(Product),      if acc_clear == 1
+  ACC[39:0] │  ACC[39:0] + sign_ext(Product),   if enable == 1 and mult_valid == 1
+            └  ACC[39:0],                       otherwise (hold state)
+  ```
 - **Signed Overflow Detection:** Evaluated concurrently using two's-complement arithmetic sign bits:
-  $$\text{overflow\_status} = (\overline{ACC[39]} \land \overline{Product[39]} \land Sum[39]) \lor (ACC[39] \land Product[39] \land \overline{Sum[39]})$$
+  ```text
+  overflow_status = (~ACC[39] & ~Product[39] & Sum[39]) | (ACC[39] & Product[39] & ~Sum[39])
+  ```
   An overflow flag asserts if two positive numbers sum to a negative result, or two negative numbers sum to a positive result.
 - Latency from input to valid output: **2 clock cycles**. Initiation Interval: **1 clock cycle/operation**.
 
