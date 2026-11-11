@@ -1,0 +1,157 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 550" width="100%" height="100%">
+  <defs>
+    <style>
+      .title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 20px; font-weight: bold; fill: #1a237e; }
+      .subtitle { font-family: 'Segoe UI', Arial, sans-serif; font-size: 13px; fill: #455a64; }
+      .box { rx: 8; ry: 8; stroke-width: 2; filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.15)); }
+      .box-label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; font-weight: bold; text-anchor: middle; }
+      .box-desc { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; text-anchor: middle; fill: #37474f; }
+      .wire { stroke: #263238; stroke-width: 2.5; fill: none; }
+      .wire-bus { stroke: #01579b; stroke-width: 3.5; fill: none; }
+      .ctrl-wire { stroke: #c62828; stroke-width: 2; stroke-dasharray: 4,3; fill: none; }
+      .arrow { fill: #263238; }
+      .bus-arrow { fill: #01579b; }
+      .ctrl-arrow { fill: #c62828; }
+      .stage-line { stroke: #9e9e9e; stroke-width: 1.5; stroke-dasharray: 6,4; }
+      .stage-tag { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; font-weight: bold; fill: #616161; }
+      .bus-label { font-family: 'Consolas', monospace; font-size: 11px; font-weight: bold; fill: #01579b; }
+    </style>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" class="arrow"/>
+    </marker>
+    <marker id="bus-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" class="bus-arrow"/>
+    </marker>
+    <marker id="ctrl-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" class="ctrl-arrow"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1100" height="550" fill="#fafafa"/>
+
+  <!-- Main Title -->
+  <text x="550" y="35" class="title" text-anchor="middle">Configurable INT8/INT16 Multiply-Accumulate Architecture (V6 Top-Level)</text>
+  <text x="550" y="55" class="subtitle" text-anchor="middle">High-Throughput Pipelined Architecture with Dynamic Operand Isolation and Signed Overflow Detection</text>
+
+  <!-- Pipeline Stage Boundaries -->
+  <line x1="330" y1="75" x2="330" y2="490" class="stage-line"/>
+  <text x="335" y="90" class="stage-tag">STAGE 0: Input &amp; Isolation</text>
+
+  <line x1="590" y1="75" x2="590" y2="490" class="stage-line"/>
+  <text x="595" y="90" class="stage-tag">STAGE 1: Multiplier Pipeline</text>
+
+  <line x1="880" y1="75" x2="880" y2="490" class="stage-line"/>
+  <text x="885" y="90" class="stage-tag">STAGE 2: Accumulator &amp; Clamp</text>
+
+  <!-- ================= MODULES ================= -->
+
+  <!-- 1. Input Interface & Isolation -->
+  <rect x="50" y="140" width="130" height="180" class="box" fill="#e1f5fe" stroke="#0288d1"/>
+  <text x="115" y="175" class="box-label" fill="#01579b">Operand</text>
+  <text x="115" y="195" class="box-label" fill="#01579b">Isolation</text>
+  <text x="115" y="225" class="box-desc">Zero-Gating during</text>
+  <text x="115" y="240" class="box-desc">Idle / Disabled</text>
+  <text x="115" y="255" class="box-desc">Cycles</text>
+  <text x="115" y="285" class="box-desc">[operand_isolation.sv]</text>
+
+  <!-- 2. Precision Controller -->
+  <rect x="220" y="140" width="140" height="180" class="box" fill="#e8f5e9" stroke="#388e3c"/>
+  <text x="290" y="175" class="box-label" fill="#1b5e20">Precision</text>
+  <text x="290" y="195" class="box-label" fill="#1b5e20">Controller</text>
+  <text x="290" y="225" class="box-desc">INT8 / INT16 Unpack</text>
+  <text x="290" y="240" class="box-desc">Sign Extension</text>
+  <text x="290" y="255" class="box-desc">8b/16b -> 16b Signed</text>
+  <text x="290" y="285" class="box-desc">[precision_controller.sv]</text>
+
+  <!-- 3. Multiplier & Stage 1 Register -->
+  <rect x="400" y="130" width="160" height="200" class="box" fill="#fff3e0" stroke="#f57c00"/>
+  <text x="480" y="170" class="box-label" fill="#e65100">16x16 Signed</text>
+  <text x="480" y="190" class="box-label" fill="#e65100">Multiplier</text>
+  <text x="480" y="215" class="box-desc">Shared Datapath</text>
+  <text x="480" y="230" class="box-desc">DSP48E1 / LUT</text>
+  <text x="480" y="255" class="box-label" fill="#d84315">Stage 1 Reg (M)</text>
+  <text x="480" y="275" class="box-desc">32-bit Product Latched</text>
+  <text x="480" y="300" class="box-desc">[mac_multiplier.sv]</text>
+
+  <!-- 4. Sign Extender (Stage 1 to Stage 2) -->
+  <polygon points="630,200 690,170 690,290 630,260" fill="#ede7f6" stroke="#512da8" stroke-width="2"/>
+  <text x="660" y="225" class="box-label" fill="#311b92">Sign</text>
+  <text x="660" y="245" class="box-label" fill="#311b92">Ext</text>
+  <text x="660" y="265" class="box-desc">32b->40b</text>
+
+  <!-- 5. 40-bit Accumulator & Register (Stage 2) -->
+  <rect x="740" y="130" width="160" height="200" class="box" fill="#fce4ec" stroke="#c2185b"/>
+  <text x="820" y="170" class="box-label" fill="#880e4f">40-bit Signed</text>
+  <text x="820" y="190" class="box-label" fill="#880e4f">Accumulator</text>
+  <text x="820" y="215" class="box-desc">Modulo-2^40 Adder</text>
+  <text x="820" y="235" class="box-desc">Synchronous Clear</text>
+  <text x="820" y="260" class="box-label" fill="#ad1457">Acc Reg (40b)</text>
+  <text x="820" y="280" class="box-desc">Registered Output (P)</text>
+  <text x="820" y="305" class="box-desc">[mac_accumulator.sv]</text>
+
+  <!-- 6. Overflow Detector -->
+  <rect x="750" y="370" width="140" height="90" class="box" fill="#efebe9" stroke="#5d4037"/>
+  <text x="820" y="405" class="box-label" fill="#3e2723">Overflow Detector</text>
+  <text x="820" y="425" class="box-desc">Two's-Complement Ovf</text>
+  <text x="820" y="440" class="box-desc">Optional Saturation</text>
+  <text x="820" y="455" class="box-desc">[overflow_detector.sv]</text>
+
+  <!-- ================= WIRES & SIGNALS ================= -->
+
+  <!-- Primary Inputs -->
+  <path d="M-10,180 L50,180" class="wire-bus" marker-end="url(#bus-arrow)"/>
+  <text x="0" y="170" class="bus-label">operand_a[15:0]</text>
+
+  <path d="M-10,240 L50,240" class="wire-bus" marker-end="url(#bus-arrow)"/>
+  <text x="0" y="230" class="bus-label">operand_b[15:0]</text>
+
+  <!-- Control Inputs -->
+  <path d="M-10,105 L115,105 L115,140" class="ctrl-wire" marker-end="url(#ctrl-arrow)"/>
+  <text x="30" y="95" class="box-desc" fill="#c62828">enable, in_valid</text>
+
+  <path d="M-10,400 L290,400 L290,320" class="ctrl-wire" marker-end="url(#ctrl-arrow)"/>
+  <text x="60" y="390" class="box-desc" fill="#c62828">precision_mode (0:INT8, 1:INT16)</text>
+
+  <path d="M-10,470 L800,470 L800,330" class="ctrl-wire" marker-end="url(#ctrl-arrow)"/>
+  <text x="120" y="460" class="box-desc" fill="#c62828">acc_clear (Propagated via Pipeline)</text>
+
+  <!-- Isolation to Precision -->
+  <path d="M180,200 L220,200" class="wire-bus" marker-end="url(#bus-arrow)"/>
+  <path d="M180,250 L220,250" class="wire-bus" marker-end="url(#bus-arrow)"/>
+
+  <!-- Precision to Multiplier -->
+  <path d="M360,200 L400,200" class="wire-bus" marker-end="url(#bus-arrow)"/>
+  <text x="365" y="190" class="bus-label">16b</text>
+  <path d="M360,250 L400,250" class="wire-bus" marker-end="url(#bus-arrow)"/>
+  <text x="365" y="240" class="bus-label">16b</text>
+
+  <!-- Multiplier to Sign Extender -->
+  <path d="M560,230 L630,230" class="wire-bus" marker-end="url(#bus-arrow)"/>
+  <text x="575" y="220" class="bus-label">32b prod</text>
+
+  <!-- Sign Extender to Accumulator -->
+  <path d="M690,230 L740,230" class="wire-bus" marker-end="url(#bus-arrow)"/>
+  <text x="695" y="220" class="bus-label">40b signed</text>
+
+  <!-- Accumulator to Outputs -->
+  <path d="M900,230 L1040,230" class="wire-bus" marker-end="url(#bus-arrow)"/>
+  <text x="940" y="220" class="bus-label">accumulator_result[39:0]</text>
+
+  <!-- Overflow Connections -->
+  <path d="M840,330 L840,370" class="wire" marker-end="url(#arrow)"/>
+  <path d="M890,415 L1040,415" class="ctrl-wire" marker-end="url(#ctrl-arrow)"/>
+  <text x="940" y="405" class="box-desc" fill="#c62828">overflow_status</text>
+
+  <!-- Valid Signal Propagation -->
+  <path d="M560,150 L740,150" class="ctrl-wire" marker-end="url(#ctrl-arrow)"/>
+  <text x="620" y="142" class="box-desc" fill="#c62828">mult_valid</text>
+
+  <path d="M900,170 L1040,170" class="ctrl-wire" marker-end="url(#ctrl-arrow)"/>
+  <text x="940" y="162" class="box-desc" fill="#c62828">out_valid</text>
+
+  <!-- Feedback Path (Accumulator) -->
+  <path d="M860,330 L860,350 L710,350 L710,270 L740,270" class="wire" marker-end="url(#arrow)"/>
+  <text x="730" y="345" class="bus-label">acc_feedback[39:0]</text>
+
+</svg>

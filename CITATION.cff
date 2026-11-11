@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use this hardware architecture or experimental data in your research or project, please cite it as below."
+title: "Design and FPGA Implementation of a High-Throughput Configurable INT8/INT16 Multiply-Accumulate Architecture"
+authors:
+  - family-names: "Patil"
+    given-names: "Pratham"
+repository-code: "https://github.com/PrathamPatil-sudo/configurable-int8-int16-mac-fpga"
+keywords:
+  - fpga
+  - systemverilog
+  - vivado
+  - zynq-7000
+  - pynq
+  - multiply-accumulate
+  - mac
+  - int8
+  - int16
+  - dsp48e1
+  - hardware-acceleration
+date-released: 2026-11-11

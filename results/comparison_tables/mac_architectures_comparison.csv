@@ -1,0 +1,8 @@
+Architecture_ID,Architecture_Name,LUTs,FFs,DSPs,BRAM,Target_Clock_MHz,WNS_ns,TNS_ns,Fmax_MHz,Latency_Cycles,II_Cycles,Throughput_MMAC_s,Dynamic_Power_W,Static_Power_W,Total_Power_W,Note
+V1,Basic Non-Pipelined INT16 MAC,3,42,2,0,100.0,2.831,0.0,139.49,1,1,100.0,0.003,0.103,0.106,Baseline non-pipelined INT16; 100 MMAC/s at configured clock; Fmax is STA estimate
+V2,Shared Configurable INT8/INT16 MAC,11,42,2,0,100.0,1.575,0.0,118.69,1,1,100.0,0.003,0.103,0.106,Resource-shared single-cycle; 100 MMAC/s at configured clock; Fmax is STA estimate
+V3,Pipelined Configurable MAC,12,44,2,0,100.0,2.666,0.0,136.35,2,1,100.0,0.003,0.103,0.106,Shared pipelined (no isolation); 100 MMAC/s at configured clock; Fmax is STA estimate
+V4,Separate INT8/INT16 Datapaths,104,61,1,0,100.0,2.913,0.0,141.1,2,1,100.0,0.003,0.103,0.106,Dedicated 8x8 and 16x16 multipliers; 100 MMAC/s at configured clock; Fmax is STA estimate
+V5,Pipelined MAC with Operand Isolation,28,44,2,0,100.0,3.145,0.0,145.88,2,1,100.0,0.003,0.103,0.106,Input operand isolation enabled; 100 MMAC/s at configured clock; Fmax is STA estimate
+V6_DSP,Final Optimized Architecture (DSP),28,44,2,0,100.0,3.145,0.0,145.88,2,1,100.0,0.003,0.103,0.106,Full feature top with DSP inference; 100 MMAC/s at configured clock; Fmax is STA estimate
+V6_LUT,Optimized Architecture (Forced LUTs),397,76,0,0,100.0,0.116,0.0,101.17,2,1,100.0,0.004,0.103,0.107,Forced LUT-based multiplier mapping; 100 MMAC/s at configured clock; Fmax is STA estimate

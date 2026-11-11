@@ -1,0 +1,5 @@
+=== SIMULATION VERIFICATION SUMMARY ===
+tb_mac_basic: PASS
+tb_mac_configurable: PASS
+tb_mac_pipelined: PASS
+tb_mac_top: PASS

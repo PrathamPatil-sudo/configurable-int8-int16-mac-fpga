@@ -1,0 +1,47 @@
+# Vivado & EDA Temporary Files
+.Xil/
+*.jou
+*.log
+*.str
+*.pb
+*.wdf
+*.vdi
+*.vds
+*.dcp
+clockInfo.txt
+dfx_runtime.txt
+test_part.tcl
+
+# Vivado Intermediate Project Directories
+vivado/.Xil/
+vivado/ip_packager_proj/
+vivado/pynq_mac_soc/
+vivado/pynq_overlay/
+vivado/*.jou
+vivado/*.log
+vivado/*.dcp
+reports/hardware/*.bit
+reports/hardware/*.hwh
+
+# Simulation Artifacts
+xsim.dir/
+*.wdb
+*.vcd
+webtalk*
+xvlog.*
+xelab.*
+xsim.*
+
+# Python Cache & Environment
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.env
+venv/
+env/
+
+# OS Artifacts
+.DS_Store
+Thumbs.db
+Desktop.ini

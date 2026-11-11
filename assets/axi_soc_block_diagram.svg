@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 450" width="100%" height="100%">
+  <defs>
+    <style>
+      .title { font-family: 'Segoe UI', Arial, sans-serif; font-size: 18px; font-weight: bold; fill: #1a237e; }
+      .box { rx: 8; ry: 8; stroke-width: 2; filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.12)); }
+      .box-label { font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; font-weight: bold; text-anchor: middle; }
+      .box-desc { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; text-anchor: middle; fill: #37474f; }
+      .bus-wire { stroke: #d84315; stroke-width: 4; fill: none; }
+      .clk-wire { stroke: #1976d2; stroke-width: 2; stroke-dasharray: 4,3; fill: none; }
+      .label-bus { font-family: 'Consolas', monospace; font-size: 11px; font-weight: bold; fill: #d84315; }
+    </style>
+    <marker id="bus-arrow-red" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#d84315"/>
+    </marker>
+  </defs>
+
+  <rect width="1000" height="450" fill="#fafafa"/>
+  <text x="500" y="35" class="title" text-anchor="middle">Zynq-7000 SoC Block Architecture &amp; PYNQ-Z2 Overlay Integration</text>
+
+  <!-- PS Boundary Box -->
+  <rect x="50" y="70" width="280" height="340" fill="#e8eaf6" stroke="#3f51b5" stroke-width="2" rx="10"/>
+  <text x="190" y="100" class="box-label" fill="#1a237e">ZYNQ PROCESSING SYSTEM (PS7)</text>
+  <text x="190" y="120" class="box-desc">Dual ARM Cortex-A9 MPCore @ 650 MHz</text>
+
+  <rect x="75" y="140" width="230" height="70" fill="#ffffff" stroke="#9fa8da" rx="6"/>
+  <text x="190" y="165" class="box-label" fill="#283593">PYNQ Linux / Python 3</text>
+  <text x="190" y="185" class="box-desc">pynq.Overlay &amp; MMIO Driver API</text>
+
+  <rect x="75" y="230" width="230" height="60" fill="#ffffff" stroke="#9fa8da" rx="6"/>
+  <text x="190" y="255" class="box-label" fill="#283593">DDR3 Controller (512 MB)</text>
+  <text x="190" y="275" class="box-desc">Shared System Memory</text>
+
+  <rect x="75" y="310" width="230" height="70" fill="#ffffff" stroke="#9fa8da" rx="6"/>
+  <text x="190" y="335" class="box-label" fill="#c62828">M_AXI_GP0 (AXI Master)</text>
+  <text x="190" y="355" class="box-desc">FCLK_CLK0 = 100 MHz</text>
+
+  <!-- Interconnect -->
+  <rect x="410" y="170" width="160" height="150" class="box" fill="#fff3e0" stroke="#ff9800"/>
+  <text x="490" y="210" class="box-label" fill="#e65100">AXI4-Lite</text>
+  <text x="490" y="230" class="box-label" fill="#e65100">Interconnect</text>
+  <text x="490" y="255" class="box-desc">Address Decoding</text>
+  <text x="490" y="275" class="box-desc">Protocol Conversion</text>
+
+  <!-- PL Boundary Box -->
+  <rect x="650" y="70" width="300" height="340" fill="#f1f8e9" stroke="#558b2f" stroke-width="2" rx="10"/>
+  <text x="800" y="100" class="box-label" fill="#33691e">PROGRAMMABLE LOGIC (PL)</text>
+  <text x="800" y="120" class="box-desc">PYNQ-Z2 (XC7Z020CLG400-1)</text>
+
+  <!-- Custom IP -->
+  <rect x="680" y="150" width="240" height="230" class="box" fill="#ffffff" stroke="#7cb342"/>
+  <text x="800" y="180" class="box-label" fill="#1b5e20">Custom AXI4-Lite MAC IP</text>
+  <text x="800" y="200" class="box-desc">Memory Mapped: 0x43C00000</text>
+
+  <rect x="700" y="220" width="200" height="50" fill="#e8f5e9" stroke="#81c784" rx="4"/>
+  <text x="800" y="240" class="box-label" fill="#2e7d32">Register File (64-byte)</text>
+  <text x="800" y="255" class="box-desc">CTRL, MODE, OPA, OPB, STATUS, RES</text>
+
+  <rect x="700" y="290" width="200" height="70" fill="#e1f5fe" stroke="#4fc3f7" rx="4"/>
+  <text x="800" y="315" class="box-label" fill="#0277bd">Configurable MAC Core</text>
+  <text x="800" y="335" class="box-desc">Pipelined INT8/INT16 Datapath</text>
+  <text x="800" y="350" class="box-desc">DSP48E1 / Operand Isolation</text>
+
+  <!-- AXI Connections -->
+  <path d="M305,345 L410,245" class="bus-wire" marker-end="url(#bus-arrow-red)"/>
+  <text x="340" y="280" class="label-bus">M_AXI_GP0</text>
+
+  <path d="M570,245 L680,245" class="bus-wire" marker-end="url(#bus-arrow-red)"/>
+  <text x="590" y="235" class="label-bus">S_AXI_LITE</text>
+
+  <!-- Clock & Reset -->
+  <path d="M305,365 L490,365 L490,320" class="clk-wire"/>
+  <path d="M490,365 L800,365 L800,380" class="clk-wire"/>
+  <text x="520" y="360" font-family="'Consolas', monospace" font-size="10px" fill="#1976d2">FCLK_CLK0 (100 MHz) &amp; ARESETN</text>
+</svg>
