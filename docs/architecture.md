@@ -35,7 +35,7 @@ graph TB
 
     subgraph Custom_IP ["axi_lite_mac_ip (Base: 0x43C00000)"]
         AXI_SLV["AXI4-Lite Slave Interface"]
-        REG_BANK["Memory-Mapped Register Bank<br/>Control | Mode | OpA | OpB | Status | ResLow | ResHigh"]
+        REG_BANK["Memory-Mapped Register Bank<br/>Control, Mode, OpA, OpB, Status, ResLow, ResHigh"]
         AXI_SLV <--> REG_BANK
     end
 
@@ -53,11 +53,11 @@ graph TB
         ACC --> OVF
     end
 
-    PYNQ_API ==>|MMIO Read/Write| M_AXI
-    AXI_IC ==>|32-bit AXI4-Lite Bus| AXI_SLV
-    REG_BANK ==>|Operand & Control Signals| ISO
-    ACC ==>|Accumulator Output [39:0]| REG_BANK
-    OVF ==>|Overflow & Valid Flags| REG_BANK
+    PYNQ_API ==>|"MMIO Read/Write"| M_AXI
+    AXI_IC ==>|"32-bit AXI4-Lite Bus"| AXI_SLV
+    REG_BANK ==>|"Operand & Control Signals"| ISO
+    ACC ==>|"Accumulator Output (39:0)"| REG_BANK
+    OVF ==>|"Overflow & Valid Flags"| REG_BANK
 ```
 
 ---
