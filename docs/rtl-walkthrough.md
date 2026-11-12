@@ -50,10 +50,14 @@ graph TD
   - Outputs: `ext_operand_a[15:0]`, `ext_operand_b[15:0]` (signed)
 - **Operation:**
   - `precision_mode = 1'b0` (INT8):
-    $$\text{ext\_operand}[15:0] = \{\{8\{\text{operand}[7]\}\}, \text{operand}[7:0]\}$$
+    ```systemverilog
+    ext_operand[15:0] = {{8{operand[7]}}, operand[7:0]};
+    ```
     Bits `[7:0]` are treated as signed 8-bit integers and sign-extended across the upper 8 bits.
   - `precision_mode = 1'b1` (INT16):
-    $$\text{ext\_operand}[15:0] = \text{operand}[15:0]$$
+    ```systemverilog
+    ext_operand[15:0] = operand[15:0];
+    ```
     The full 16-bit signed operand is passed through directly.
 
 ---
@@ -62,10 +66,12 @@ graph TD
 - **Purpose:** Computes the 32-bit signed product of two 16-bit operands with optional pipeline register insertion.
 - **Parameters:**
   - `USE_DSP` (string, default `"auto"`): Guides Vivado synthesis attribute `(* use_dsp = USE_DSP *)` to select dedicated DSP48E1 slices or soft CLB logic.
-  - `PIPELINED` (bit, default `1'b1`): Inserts the pipeline register $MREG$.
+  - `PIPELINED` (bit, default `1'b1`): Inserts the pipeline register `MREG`.
 - **Operation:**
   Computes signed product:
-  $$\text{product\_comb} = \text{signed\_a} \times \text{signed\_b}$$
+  ```systemverilog
+  product_comb = signed_a * signed_b;
+  ```
   When `PIPELINED = 1'b1`, `product_comb`, `in_valid`, and `acc_clear` are registered on `posedge clk` when `enable = 1`.
 
 ---
@@ -113,12 +119,12 @@ graph TD
 ## 3. Top-Level Datapath & Architectural Variants
 
 ### 3.1 `mac_top.sv` (Production Core V6)
-The production core instantiates `operand_isolation`, `precision_controller`, `mac_multiplier`, `mac_accumulator`, and `overflow_detector`. It accepts operands on clock cycle 0 and produces a verified 40-bit accumulation result on clock cycle 2 with an Initiation Interval of 1 cycle ($II = 1$).
+The production core instantiates `operand_isolation`, `precision_controller`, `mac_multiplier`, `mac_accumulator`, and `overflow_detector`. It accepts operands on clock cycle 0 and produces a verified 40-bit accumulation result on clock cycle 2 with an Initiation Interval of 1 cycle (II = 1).
 
 ### 3.2 Evaluation Variants (V1–V5, V6_LUT)
 - `mac_basic.sv` (V1): Baseline single-cycle non-pipelined INT16-only MAC.
 - `mac_configurable.sv` (V2): Single-cycle INT8/INT16 configurable MAC with sign-extension.
-- `mac_pipelined.sv` (V3): Shared 16x16 multiplier with $MREG$ pipeline registers, but without operand isolation.
+- `mac_pipelined.sv` (V3): Shared 16x16 multiplier with MREG pipeline registers, but without operand isolation.
 - `mac_separate_datapaths.sv` (V4): Independent 8x8 and 16x16 multipliers with output multiplexing.
 - `mac_pipelined_isolated.sv` (V5): Shared pipelined MAC with dynamic operand isolation enabled.
 
